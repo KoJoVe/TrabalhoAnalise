@@ -1,1 +1,1 @@
-document.getElementById("mainDiv").innerHTML = "BLAA"
+document.getElementById("mainDiv").innerHTML = "BLAA"+"Double blaaaaa"
