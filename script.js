@@ -1,0 +1,1 @@
+document.getElementById("mainDiv").innerHTML = "BLA"
