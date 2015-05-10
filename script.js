@@ -1,1 +1,0 @@
-document.getElementById("mainDiv").innerHTML = "BLAA"+"tadeu viado"
