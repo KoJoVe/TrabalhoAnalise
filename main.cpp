@@ -514,16 +514,18 @@ int main(void){
 
 	printf("\nAchados %d origens\n", contador);
 
-	referenciaUltimoNo = BFS(listaOrigens->cabeca->no, 181440);
+	referenciaUltimoNo = BFS(grafo[102345678], 181440);
 
-	for (int a; a < 3; a++)
+	for (int a = 0; a < 3; a++)
 	{
 		printf("\n");
-		for (int b; b < 3; b++)
+		for (int b = 0; b < 3; b++)
 		{
 			printf("%d", referenciaUltimoNo->matriz[a][b]);
 		}
 	}
+
+	printf("\n");
 
 	return 0;
 }
