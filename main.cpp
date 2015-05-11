@@ -3,8 +3,8 @@
 /* TODO:
 
 -Criar struct do no com seguintes informações:
-  -Matriz para representar tabuleiro
-  -Lista de filhos
+-Matriz para representar tabuleiro
+-Lista de filhos
 
 -Criar struct de lista encadeada
 
@@ -12,7 +12,7 @@
 
 typedef struct node
 {
-	GRA_Node* noGrafo
+	GRA_Node* noGrafo;
 
 	struct node * proximo;
 
@@ -32,11 +32,13 @@ typedef struct granode
 {
 	int matriz[3][3];
 
-	LIS_lista * listaFilhos;
+	struct granode * proximo;
+
+	LIS_Lista * listaFilhos;
 
 } GRA_Node;
 
-typedef struct grafo 
+typedef struct grafo
 {
 	GRA_Node* origem;
 
@@ -60,17 +62,17 @@ LIS_Node * LIS_CriaElemento(GRA_Node * no)
 		exit(0);
 	}
 
-	node->node = no;
+	node->noGrafo = no;
 	node->proximo = NULL;
 
 	return node;
 }
 
-LIS_lista * LIS_CriaLista()
+LIS_Lista * LIS_CriaLista()
 {
-	LIS_lista * list = NULL;
+	LIS_Lista * list = NULL;
 
-	list = (LIS_lista *)malloc(sizeof(LIS_lista));
+	list = (LIS_Lista *)malloc(sizeof(LIS_Lista));
 
 	if (list == NULL)
 	{
@@ -81,7 +83,7 @@ LIS_lista * LIS_CriaLista()
 	return list;
 }
 
-void LIS_InserirElemento(LIS_lista * lista, GRA_Node * no)
+void LIS_InserirElemento(LIS_Lista * lista, GRA_Node * no)
 {
 	LIS_Node * node;
 
@@ -118,26 +120,26 @@ void LIS_InserirElemento(LIS_lista * lista, GRA_Node * no)
 
 
 
-GRA_Node* DFS(LIS_Lista* G,int ** matriz) {
+GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
-	GRA_Node* no = criaNo(matrix);
-	adicionaAosExplorados(G,no);
+	GRA_Node* no = criaNo(matriz);
+	adicionaAosExplorados(G, no);
 
 	for (int i = 0; i < 4; ++i)
 	{
 
-		int** matrizFilho = achaMatriz(matrix,i);
+		int** matrizFilho = achaMatriz(matriz, i);
 
-		if(matrizFilho != NULL) {
+		if (matrizFilho != NULL) {
 
-			GRA_Node* noVizinho = verificaSeExplorado(G,matrizFilho);
+			GRA_Node* noVizinho = verificaSeExplorado(G, matrizFilho);
 
-			if(noVizinho == NULL) {
-				noVizinho = DFS(G,matrizFilho);
+			if (noVizinho == NULL) {
+				noVizinho = DFS(G, matrizFilho);
 			}
 
-			adicionaVizinho(no,noVizinho);
-			
+			adicionaVizinho(no, noVizinho);
+
 		}
 	}
 
@@ -147,4 +149,3 @@ GRA_Node* DFS(LIS_Lista* G,int ** matriz) {
 int main(void){
 	printf("quero");
 }
-
