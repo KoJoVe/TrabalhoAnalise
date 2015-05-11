@@ -388,10 +388,11 @@ GRA_Node* DFS(int ** matriz) {
 	return no;
 }
 
-void bfs(GRA_Node * noRaiz, int NVertices)
+GRA_Node * BFS(GRA_Node * noRaiz, int NVertices)
 {
 	LIS_ListaDeOrigens * listaAdjacencia;
 	GRA_Node * aux;
+	GRA_Node * ultimo;
 	int i, j;
 	int conta = 0;
 	listaAdjacencia = criaLista();
@@ -405,57 +406,58 @@ void bfs(GRA_Node * noRaiz, int NVertices)
 		{
 
 			aux = removeDaLista(listaAdjacencia);
+			ultimo = aux;
 
 			for (j = 0; j < 4; j++)
 			{
 				switch (j)
 				{
 				case 0:
-					if(aux->cima!=NULL) 
+					if (aux->cima != NULL)
 					{
 						if (aux->cima->visitado == 0)
 						{
 							aux->cima->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->cima);
 							conta++;
-							printf("Contador: %d\n",conta);
+							printf("Contador: %d\n", conta);
 						}
 					}
 					break;
 				case 1:
-					if(aux->direita!=NULL) 
+					if (aux->direita != NULL)
 					{
 						if (aux->direita->visitado == 0)
 						{
 							aux->direita->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->direita);
 							conta++;
-							printf("Contador: %d\n",conta);
+							printf("Contador: %d\n", conta);
 
 						}
 					}
 					break;
 				case 2:
-					if(aux->baixo!=NULL) 
+					if (aux->baixo != NULL)
 					{
 						if (aux->baixo->visitado == 0)
 						{
 							aux->baixo->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->baixo);
 							conta++;
-							printf("Contador: %d\n",conta);
+							printf("Contador: %d\n", conta);
 						}
 					}
 					break;
 				case 3:
-					if(aux->esquerda!=NULL) 
+					if (aux->esquerda != NULL)
 					{
 						if (aux->esquerda->visitado == 0)
 						{
 							aux->esquerda->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->esquerda);
 							conta++;
-							printf("Contador: %d\n",conta);
+							printf("Contador: %d\n", conta);
 						}
 					}
 					break;
@@ -463,6 +465,8 @@ void bfs(GRA_Node * noRaiz, int NVertices)
 			}
 		}
 	}
+
+	return ultimo;
 }
 
 int main(void){
@@ -471,10 +475,11 @@ int main(void){
 	int** matriz;
 	int a[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 	int nVert;
+	GRA_Node * referenciaUltimoNo;
 
 	matriz = (int **)malloc(3 * sizeof(int *));
 
-	for (int y = 0; y<3; y++)
+	for (int y = 0; y < 3; y++)
 		matriz[y] = (int *)malloc(3 * sizeof(int));
 
 	matriz[0][0] = 0;
@@ -509,7 +514,16 @@ int main(void){
 
 	printf("\nAchados %d origens\n", contador);
 
-	bfs(listaOrigens->cabeca->no, 181440);
+	referenciaUltimoNo = BFS(listaOrigens->cabeca->no, 181440);
+
+	for (int a; a < 3; a++)
+	{
+		printf("\n");
+		for (int b; b < 3; b++)
+		{
+			printf("%d", referenciaUltimoNo->matriz[a][b]);
+		}
+	}
 
 	return 0;
 }
