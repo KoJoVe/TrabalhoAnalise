@@ -11,6 +11,8 @@
 
 */
 
+long global = 0;
+
 typedef struct granode
 {
 	int** matriz;
@@ -146,8 +148,7 @@ void adicionaAosExplorados(GRA_Grafo* G, GRA_Node* no) {
 
 	if (G->origem == NULL) {
 		G->origem = no;
-	}
-	else {
+	} else {
 		noAux = G->origem;
 		while (noAux->proximo != NULL) {
 			noAux = noAux->proximo;
@@ -182,6 +183,7 @@ GRA_Node* verificaSeExplorado(GRA_Grafo* G, int** matrizFilho) {
 		if (comparaMatriz(noAux->matriz, matrizFilho) == 1) {
 			return noAux;
 		}
+		noAux = noAux->proximo;
 	}
 
 	return NULL;
@@ -216,6 +218,8 @@ GRA_Grafo * GRA_CriaGrafo()
 		exit(0);
 	}
 
+	grafo->origem = NULL;
+
 	return grafo;
 }
 
@@ -224,8 +228,14 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 	GRA_Node* no = criaNo(matriz);
 	adicionaAosExplorados(G, no);
 
+	global++;
+
+	printf("Numero: %ld\n", global);
+
 	for (int i = 0; i < 4; ++i)
 	{
+
+		// printf("Entra vizinhos\n");
 
 		int ** matrizFilho;
 
@@ -236,9 +246,13 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
 		matrizFilho = acharMatriz(matriz, i);
 
+		// printf("Achou filhos\n");
+
 		if (matrizFilho != NULL) {
 
 			GRA_Node* noVizinho = verificaSeExplorado(G, matrizFilho);
+
+			// printf("Achou vizinho\n");
 
 			if (noVizinho == NULL) {
 				noVizinho = DFS(G, matrizFilho);
@@ -271,7 +285,7 @@ int main(void){
 	matriz[1][2] = 5;
 	matriz[2][0] = 6;
 	matriz[2][1] = 7;
-	matriz[2][1] = 8;
+	matriz[2][2] = 8;
 
 	grafo = GRA_CriaGrafo();
 	
