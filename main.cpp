@@ -2,19 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #define N 1000000000
-/* TODO:
 
--Criar struct do no com seguintes informações:
--Matriz para representar tabuleiro
--Lista de filhos
-999999999
--Criar struct de lista encadeada
-
-*/
-
-long global = 0;
+long globalVertex = 0;
+long globalEdges = 0;
 int qtd = 0;
-int ListaDeMatrizes[362880];
+int** ListaDeMatrizes[362880];
 
 typedef struct granode
 {
@@ -173,7 +165,7 @@ void permute(int *a, int i, int n)
 
 		ListaDeMatrizes[qtd] = matriz;
 		qtd++;
-		printf("%d\n", qtd);
+		//printf("%d\n", qtd);
 	}
 	else
 	{
@@ -343,9 +335,8 @@ GRA_Node* DFS(int ** matriz) {
 	GRA_Node* no = criaNo(matriz);
 	adicionaAosExplorados(no);
 
-	global++;
+	globalVertex++;
 
-	printf("\nNumero: %ld\n", global);
 	//printf("Combinaçao do puzzle: ");
 	//printMatriz(matriz);
 
@@ -376,6 +367,7 @@ GRA_Node* DFS(int ** matriz) {
 			}
 
 			adicionaVizinho(no, noVizinho, i);
+			globalEdges++;
 
 		}
 	}
@@ -385,7 +377,7 @@ GRA_Node* DFS(int ** matriz) {
 
 int main(void){
 
-	GRA_Node *no;
+	LIS_ListaDeOrigens *listaOrigens = criaLista();
 	int** matriz;
 	int a[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
@@ -403,13 +395,27 @@ int main(void){
 	matriz[2][0] = 6;
 	matriz[2][1] = 7;
 	matriz[2][2] = 8;
-
 	
 	permute(a, 0, 8);
 
-	no = DFS(matriz);
+	int contador = 0;
 
-	getchar();
+	for (int i = 0; i < 362880; ++i)
+	{	
+		int** matrizNumero = ListaDeMatrizes[i];
+		int numero = matrizParaNumero(matrizNumero);
+
+		if(grafo[numero]==NULL) {
+			insereNaLista(listaOrigens,DFS(matrizNumero));
+			printf("\nNumero de verticies da componente %d: %ld\n",contador+1, globalVertex);
+			printf("\nNumero de arestas da componente %d: %ld\n",contador+1, globalEdges/2);
+			contador++;
+			globalVertex = 0;
+			globalEdges = 0;
+		}
+	}
+
+	printf("\nAchados %d origens\n\n", contador);
 
 	return 0;
 }
