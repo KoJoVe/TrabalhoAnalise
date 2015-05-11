@@ -11,48 +11,24 @@
 
 */
 
-
 typedef struct granode
 {
-	int matriz[3][3];
+	int** matriz;
 
 	struct granode * proximo;
 
-	struct granode * left;
-
-	struct granode * up;
-
-	struct granode * right;
-
-	struct granode * down;
+	struct granode * cima;
+	struct granode * baixo;
+	struct granode * esquerda;
+	struct granode * direita;
 
 } GRA_Node;
-
-typedef struct node
-{
-	GRA_Node* noGrafo;
-
-	struct node * proximo;
-
-}LIS_Node;
-
-typedef struct list
-{
-	LIS_Node * origem;
-
-	LIS_Node * fim;
-
-	LIS_Node * elementoCorrente;
-
-} LIS_Lista;
 
 typedef struct grafo
 {
 	GRA_Node* origem;
 
 	GRA_Node* corrente;
-
-	GRA_Node* proximo;
 
 } GRA_Grafo;
 
@@ -82,7 +58,7 @@ void SwapNumbers(int** matriz, int linS, int colS, int linE, int colE)
 	matriz[linE][colE] = temp;
 }
 
-int ** acharMatriz(int matriz[3][3], int i)
+int ** acharMatriz(int** matriz, int i)
 {
 	int linAux, colAux;
 	int ** matrizNova;
@@ -142,78 +118,106 @@ int ** acharMatriz(int matriz[3][3], int i)
 	return matrizNova;
 }
 
-/*
-GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
+GRA_Node* criaNo(int** matriz) {
 
-GRA_Node* no = criaNo(matriz);
+	GRA_Node * node;
 
-adicionaAosExplorados(G, no);
+	node = (GRA_Node*)malloc(sizeof(GRA_Node));
 
-for (int i = 0; i < 4; ++i)
-{
-
-int** matrizFilho = achaMatriz(matriz, i);
-
-if (matrizFilho != NULL) {
-
-GRA_Node* noVizinho = verificaSeExplorado(G, matrizFilho);
-
-if (noVizinho == NULL) {
-noVizinho = DFS(G, matrizFilho);
-}
-
-adicionaVizinho(no, noVizinho);
-
-}
-}
-
-return no;
-}
-*/
-
-int main(void){
-	int i, j;
-	int lin = 0, col = 0;
-	int matrix[3][3] = { 4, 1, 2, 3, 0, 5, 6, 7, 8 };
-	int ** matrizTeste;
-
-	matrizTeste = acharMatriz(matrix, 1);
-
-	for (i = 0; i < 3; i++)
+	if (node == NULL)
 	{
-		printf("\n");
-		for (j = 0; j < 3; j++)
-		{
-			printf("%d", matrizTeste[i][j]);
+		printf("erro no malloc");
+		exit(0);
+	}
+
+	node->matriz = matriz;
+	node->proximo = NULL;
+	node->cima = NULL;
+	node->baixo = NULL;
+	node->esquerda = NULL;
+	node->direita = NULL;
+
+	return node;
+}
+
+void adicionaAosExplorados(GRA_Grafo* G,GRA_Node* no) {
+
+	GRA_Node* noAux;
+
+	if(G->origem == NULL) {
+		G->origem = no;
+	} else {
+		noAux = G->origem;
+		while(noAux->proximo != NULL) {
+			noAux = noAux -> proximo;
+		}
+		noAux->proximo = no;
+	}
+}
+
+GRA_Node* verificaSeExplorado(GRA_Grafo* G,int** matrizFilho) {
+
+	GRA_Node* noAux = G->origem;
+
+	while(noAux->proximo != NULL) {
+		if (comparaMatriz(noAux->matriz,matrizFilho) == 1) {
+			return noAux;
 		}
 	}
 
+	return NULL;
+}
 
-	/*
-	AchaZero(matrix, &lin, &col);
+void adicionaVizinho(GRA_Node* no, GRA_Node* noVizinho, int i) {
 
-	printf("quero %d, %d\n", lin, col);
-
-	for (i = 0; i < 3; i++)
-	{
-	printf("\n");
-	for (j = 0; j < 3; j++)
-	{
-	printf("%d", matrix[i][j]);
+	if(i==0) {
+		no->cima = noVizinho;
 	}
+	if(i==1) {
+		no->direita = noVizinho;
 	}
+	if(i==2) {
+		no->baixo = noVizinho;
+	}
+	if(i==3) {
+		no->esquerda = noVizinho;
+	}
+	
+}
 
-	printf("\n");
+GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
-	SwapNumbers(matrix, lin, col, 0, 0);
+	GRA_Node* no = criaNo(matriz);
+	adicionaAosExplorados(G, no);
 
-	for (i = 0; i < 3; i++)
+	for (int i = 0; i < 4; ++i)
 	{
-	printf("\n");
-	for (j = 0; j < 3; j++)
-	{
-	printf("%d", matrix[i][j]);
+
+		int ** matrizFilho;
+
+		matrizFilho=(int **)malloc(3*sizeof(int *));
+
+		for(int y=0;y<3;y++)
+		    matrizFilho[y]=(int *) malloc(3*sizeof(int));
+
+		matrizFilho = acharMatriz(matriz, i);
+
+		if (matrizFilho != NULL) {
+
+			GRA_Node* noVizinho = verificaSeExplorado(G, matrizFilho);
+
+			if (noVizinho == NULL) {
+				noVizinho = DFS(G, matrizFilho);
+			}
+
+			adicionaVizinho(no, noVizinho,i);
+
+		}
 	}
-	}
-	*/
+
+	return no;
+}
+
+int main(void){
+
 }
