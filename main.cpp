@@ -12,7 +12,7 @@
 
 typedef struct node
 {
-	GRA_Node * node;
+	GRA_Node* noGrafo
 
 	struct node * proximo;
 
@@ -26,7 +26,27 @@ typedef struct list
 
 	LIS_Node * elementoCorrente;
 
-}LIS_lista;
+} LIS_Lista;
+
+typedef struct granode
+{
+	int matriz[3][3];
+
+	LIS_lista * listaFilhos;
+
+} GRA_Node;
+
+typedef struct grafo 
+{
+	GRA_Node* origem;
+
+	GRA_Node* corrente;
+
+	GRA_Node* proximo;
+
+} GRA_Grafo;
+
+
 
 LIS_Node * LIS_CriaElemento(GRA_Node * no)
 {
@@ -94,6 +114,34 @@ void LIS_InserirElemento(LIS_lista * lista, GRA_Node * no)
 	}
 
 	lista->elementoCorrente = node;
+}
+
+
+
+GRA_Node* DFS(LIS_Lista* G,int ** matriz) {
+
+	GRA_Node* no = criaNo(matrix);
+	adicionaAosExplorados(G,no);
+
+	for (int i = 0; i < 4; ++i)
+	{
+
+		int** matrizFilho = achaMatriz(matrix,i);
+
+		if(matrizFilho != NULL) {
+
+			GRA_Node* noVizinho = verificaSeExplorado(G,matrizFilho);
+
+			if(noVizinho == NULL) {
+				noVizinho = DFS(G,matrizFilho);
+			}
+
+			adicionaVizinho(no,noVizinho);
+			
+		}
+	}
+
+	return no;
 }
 
 int main(void){
