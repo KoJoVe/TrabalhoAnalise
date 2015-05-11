@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 /* TODO:
 
@@ -55,77 +56,7 @@ typedef struct grafo
 
 } GRA_Grafo;
 
-
-
-LIS_Node * LIS_CriaElemento(GRA_Node * no)
-{
-	LIS_Node * node;
-
-	node = (LIS_Node*)malloc(sizeof(LIS_Node));
-
-	if (node == NULL)
-	{
-		printf("erro no malloc");
-		exit(0);
-	}
-
-	node->noGrafo = no;
-	node->proximo = NULL;
-
-	return node;
-}
-
-LIS_Lista * LIS_CriaLista()
-{
-	LIS_Lista * list = NULL;
-
-	list = (LIS_Lista *)malloc(sizeof(LIS_Lista));
-
-	if (list == NULL)
-	{
-		printf("erro no malloc");
-		exit(0);
-	}
-
-	return list;
-}
-
-void LIS_InserirElemento(LIS_Lista * lista, GRA_Node * no)
-{
-	LIS_Node * node;
-
-	node = LIS_CriaElemento(no);
-	if (node == NULL)
-	{
-		printf("Falha ao criar o no");
-		exit(0);
-	}
-
-	if (lista->elementoCorrente == NULL)
-	{
-		lista->origem = node;
-		lista->fim = node;
-	}
-
-	else
-	{
-		if (lista->elementoCorrente->proximo != NULL)
-		{
-			node->proximo = lista->elementoCorrente->proximo;
-		}
-
-		else
-		{
-			lista->fim = node;
-		}
-
-		lista->elementoCorrente->proximo = node;
-	}
-
-	lista->elementoCorrente = node;
-}
-
-void AchaZero(int matriz[3][3], int * linha, int * coluna)
+void AchaZero(int** matriz, int * linha, int * coluna)
 {
 	int i, j;
 
@@ -143,7 +74,7 @@ void AchaZero(int matriz[3][3], int * linha, int * coluna)
 	}
 }
 
-void SwapNumbers(int matriz[3][3], int linS, int colS, int linE, int colE)
+void SwapNumbers(int** matriz, int linS, int colS, int linE, int colE)
 {
 	int temp;
 	temp = matriz[linS][colS];
@@ -154,8 +85,22 @@ void SwapNumbers(int matriz[3][3], int linS, int colS, int linE, int colE)
 int ** acharMatriz(int matriz[3][3], int i)
 {
 	int linAux, colAux;
+	int ** matrizNova;
 
-	AchaZero(matriz, &linAux, &colAux);
+	matrizNova=(int **)malloc(3*sizeof(int *));
+
+	for(int y=0;y<3;y++)
+	    matrizNova[y]=(int *) malloc(3*sizeof(int));
+
+	for (int k = 0; k < 3; ++k)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			matrizNova[k][j] = matriz[k][j];
+		}
+	}
+
+	AchaZero(matrizNova, &linAux, &colAux);
 
 	if (i == 0)
 	{
@@ -163,7 +108,7 @@ int ** acharMatriz(int matriz[3][3], int i)
 			return NULL;
 		}
 
-		SwapNumbers(matriz, linAux, colAux, linAux - 1, colAux);
+		SwapNumbers(matrizNova, linAux, colAux, linAux - 1, colAux);
 
 	}
 
@@ -173,7 +118,7 @@ int ** acharMatriz(int matriz[3][3], int i)
 			return NULL;
 		}
 
-		SwapNumbers(matriz, linAux, colAux, linAux, colAux + 1);
+		SwapNumbers(matrizNova, linAux, colAux, linAux, colAux + 1);
 	}
 
 	else if (i == 2)
@@ -182,7 +127,7 @@ int ** acharMatriz(int matriz[3][3], int i)
 			return NULL;
 		}
 
-		SwapNumbers(matriz, linAux, colAux, linAux + 1, colAux);
+		SwapNumbers(matrizNova, linAux, colAux, linAux + 1, colAux);
 	}
 
 	else if (i == 3)
@@ -191,10 +136,10 @@ int ** acharMatriz(int matriz[3][3], int i)
 			return NULL;
 		}
 
-		SwapNumbers(matriz, linAux, colAux, linAux, colAux - 1);
+		SwapNumbers(matrizNova, linAux, colAux, linAux, colAux - 1);
 	}
 
-	return matriz;
+	return matrizNova;
 }
 
 /*
