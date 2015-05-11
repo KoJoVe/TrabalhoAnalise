@@ -63,7 +63,6 @@ LIS_ListaDeOrigens * criaLista() {
 void insereNaLista(LIS_ListaDeOrigens* lista, GRA_Node* no) {
 
 	LIS_Node* node;
-	LIS_Node* aux;
 
 	node = (LIS_Node*)malloc(sizeof(LIS_Node));
 
@@ -81,11 +80,7 @@ void insereNaLista(LIS_ListaDeOrigens* lista, GRA_Node* no) {
 		lista->fim = node;
 	}
 	else {
-		aux = lista->cabeca;
-		while (aux->proximo != NULL) {
-			aux = aux->proximo;
-		}
-		aux->proximo = node;
+		lista->fim->proximo = node;
 		lista->fim = node;
 	}
 
@@ -94,10 +89,14 @@ void insereNaLista(LIS_ListaDeOrigens* lista, GRA_Node* no) {
 GRA_Node * removeDaLista(LIS_ListaDeOrigens* lista)
 {
 	GRA_Node * aux;
+	LIS_Node * lisAux;
 
 	aux = lista->cabeca->no;
+	lisAux = lista->cabeca;
 
 	lista->cabeca = lista->cabeca->proximo;
+
+	free(lisAux);
 
 	return aux;
 }
@@ -394,14 +393,17 @@ void bfs(GRA_Node * noRaiz, int NVertices)
 	LIS_ListaDeOrigens * listaAdjacencia;
 	GRA_Node * aux;
 	int i, j;
+	int conta = 0;
 	listaAdjacencia = criaLista();
 
 	for (i = 0; i < NVertices; i++)
 	{
 		insereNaLista(listaAdjacencia, noRaiz);
+		conta++;
 		noRaiz->visitado = 1;
 		while (listaAdjacencia->cabeca != NULL)
 		{
+
 			aux = removeDaLista(listaAdjacencia);
 
 			for (j = 0; j < 4; j++)
@@ -409,29 +411,54 @@ void bfs(GRA_Node * noRaiz, int NVertices)
 				switch (j)
 				{
 				case 0:
-					if (aux->cima->visitado == 0)
+					if(aux->cima!=NULL) 
 					{
-						aux->cima->visitado = 1;
-						insereNaLista(listaAdjacencia, aux->cima);
+						if (aux->cima->visitado == 0)
+						{
+							aux->cima->visitado = 1;
+							insereNaLista(listaAdjacencia, aux->cima);
+							conta++;
+							printf("Contador: %d\n",conta);
+						}
 					}
+					break;
 				case 1:
-					if (aux->direita->visitado == 0)
+					if(aux->direita!=NULL) 
 					{
-						aux->direita->visitado = 1;
-						insereNaLista(listaAdjacencia, aux->direita);
+						if (aux->direita->visitado == 0)
+						{
+							aux->direita->visitado = 1;
+							insereNaLista(listaAdjacencia, aux->direita);
+							conta++;
+							printf("Contador: %d\n",conta);
+
+						}
 					}
+					break;
 				case 2:
-					if (aux->baixo->visitado == 0)
+					if(aux->baixo!=NULL) 
 					{
-						aux->baixo->visitado = 1;
-						insereNaLista(listaAdjacencia, aux->baixo);
+						if (aux->baixo->visitado == 0)
+						{
+							aux->baixo->visitado = 1;
+							insereNaLista(listaAdjacencia, aux->baixo);
+							conta++;
+							printf("Contador: %d\n",conta);
+						}
 					}
+					break;
 				case 3:
-					if (aux->esquerda->visitado == 0)
+					if(aux->esquerda!=NULL) 
 					{
-						aux->esquerda->visitado = 1;
-						insereNaLista(listaAdjacencia, aux->esquerda);
+						if (aux->esquerda->visitado == 0)
+						{
+							aux->esquerda->visitado = 1;
+							insereNaLista(listaAdjacencia, aux->esquerda);
+							conta++;
+							printf("Contador: %d\n",conta);
+						}
 					}
+					break;
 				}
 			}
 		}
@@ -482,7 +509,7 @@ int main(void){
 
 	printf("\nAchados %d origens\n", contador);
 
-	bfs(listaOrigens->cabeca->no, nVert);
+	bfs(listaOrigens->cabeca->no, 181440);
 
 	return 0;
 }
