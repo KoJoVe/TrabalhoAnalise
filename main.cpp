@@ -156,6 +156,24 @@ void adicionaAosExplorados(GRA_Grafo* G, GRA_Node* no) {
 	}
 }
 
+int comparaMatriz(int** mat1, int** mat2)
+{
+	int i, j;
+
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			if (mat1[i][j] != mat2[i][j])
+			{
+				return 0;
+			}
+		}
+	}
+
+	return 1;
+}
+
 GRA_Node* verificaSeExplorado(GRA_Grafo* G, int** matrizFilho) {
 
 	GRA_Node* noAux = G->origem;
@@ -184,6 +202,21 @@ void adicionaVizinho(GRA_Node* no, GRA_Node* noVizinho, int i) {
 		no->esquerda = noVizinho;
 	}
 
+}
+
+GRA_Grafo * GRA_CriaGrafo()
+{
+	GRA_Grafo * grafo = NULL;
+
+	grafo = (GRA_Grafo *)malloc(sizeof(GRA_Grafo));
+
+	if (grafo == NULL)
+	{
+		printf("erro no malloc");
+		exit(0);
+	}
+
+	return grafo;
 }
 
 GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
@@ -221,39 +254,26 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
 int main(void){
 
-}
+	GRA_Grafo *grafo;
+	GRA_Node *no;
+	int** matriz;
 
+	matriz = (int **)malloc(3 * sizeof(int *));
 
-GRA_Grafo * GRA_CriaGrafo()
-{
-	GRA_Grafo * grafo = NULL;
+	for (int y = 0; y<3; y++)
+		matriz[y] = (int *)malloc(3 * sizeof(int));
 
-	grafo = (GRA_Grafo *)malloc(sizeof(GRA_Grafo));
+	matriz[0][0] = 0;
+	matriz[0][1] = 1;
+	matriz[0][2] = 2;
+	matriz[1][0] = 3;
+	matriz[1][1] = 4;
+	matriz[1][2] = 5;
+	matriz[2][0] = 6;
+	matriz[2][1] = 7;
+	matriz[2][1] = 8;
 
-	if (grafo == NULL)
-	{
-		printf("erro no malloc");
-		exit(0);
-	}
-
-	return grafo;
-}
-
-
-int comparaMatriz(int mat1[3][3], int mat2[3][3])
-{
-	int i, j;
-
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			if (mat1[i][j] != mat2[i][j])
-			{
-				return 0;
-			}
-		}
-	}
-
-	return 1;
+	grafo = GRA_CriaGrafo();
+	
+	no = DFS(grafo,matriz);
 }
