@@ -92,7 +92,7 @@ int ** acharMatriz(int** matriz, int i)
 
 	else if (i == 1)
 	{
-		if (colAux + 1 > 3){
+		if (colAux + 1 > 2){
 			return NULL;
 		}
 
@@ -101,7 +101,7 @@ int ** acharMatriz(int** matriz, int i)
 
 	else if (i == 2)
 	{
-		if (linAux + 1 > 3){
+		if (linAux + 1 > 2){
 			return NULL;
 		}
 
