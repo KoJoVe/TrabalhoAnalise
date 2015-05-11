@@ -438,11 +438,12 @@ void bfs(GRA_Node * noRaiz, int NVertices)
 	}
 }
 
-int main1(void){
+int main(void){
 
 	LIS_ListaDeOrigens *listaOrigens = criaLista();
 	int** matriz;
 	int a[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+	int nVert;
 
 	matriz = (int **)malloc(3 * sizeof(int *));
 
@@ -471,6 +472,7 @@ int main1(void){
 		if (grafo[numero] == NULL) {
 			insereNaLista(listaOrigens, DFS(matrizNumero));
 			printf("\nNumero de verticies da componente %d: %ld\n", contador + 1, globalVertex);
+			nVert = globalVertex;
 			printf("\nNumero de arestas da componente %d: %ld\n", contador + 1, globalEdges / 2);
 			contador++;
 			globalVertex = 0;
@@ -478,7 +480,9 @@ int main1(void){
 		}
 	}
 
-	printf("\nAchados %d origens\n\n", contador);
+	printf("\nAchados %d origens\n", contador);
+
+	bfs(listaOrigens->cabeca->no, nVert);
 
 	return 0;
 }
