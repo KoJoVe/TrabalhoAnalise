@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 /* TODO:
 
@@ -10,31 +11,16 @@
 
 */
 
-typedef struct node
-{
-	GRA_Node* noGrafo;
-
-	struct node * proximo;
-
-} LIS_Node;
-
-typedef struct list
-{
-	LIS_Node * origem;
-
-	LIS_Node * fim;
-
-	LIS_Node * elementoCorrente;
-
-} LIS_Lista;
-
 typedef struct granode
 {
-	int matriz[3][3];
+	int** matriz;
 
 	struct granode * proximo;
 
-	LIS_Lista * listaFilhos;
+	struct granode * cima;
+	struct granode * baixo;
+	struct granode * esquerda;
+	struct granode * direita;
 
 } GRA_Node;
 
@@ -44,17 +30,13 @@ typedef struct grafo
 
 	GRA_Node* corrente;
 
-	GRA_Node* proximo;
-
 } GRA_Grafo;
 
+GRA_Node* criaNo(int** matriz) {
 
+	GRA_Node * node;
 
-LIS_Node * LIS_CriaElemento(GRA_Node * no)
-{
-	LIS_Node * node;
-
-	node = (LIS_Node*)malloc(sizeof(LIS_Node));
+	node = (GRA_Node*)malloc(sizeof(GRA_Node));
 
 	if (node == NULL)
 	{
@@ -62,63 +44,60 @@ LIS_Node * LIS_CriaElemento(GRA_Node * no)
 		exit(0);
 	}
 
-	node->noGrafo = no;
+	node->matriz = matriz;
 	node->proximo = NULL;
+	node->cima = NULL;
+	node->baixo = NULL;
+	node->esquerda = NULL;
+	node->direita = NULL;
 
 	return node;
 }
 
-LIS_Lista * LIS_CriaLista()
-{
-	LIS_Lista * list = NULL;
+void adicionaAosExplorados(GRA_Grafo* G,GRA_Node* no) {
 
-	list = (LIS_Lista *)malloc(sizeof(LIS_Lista));
+	GRA_Node* noAux;
 
-	if (list == NULL)
-	{
-		printf("erro no malloc");
-		exit(0);
+	if(G->origem == NULL) {
+		G->origem = no;
+	} else {
+		noAux = G->origem;
+		while(noAux->proximo != NULL) {
+			noAux = noAux -> proximo;
+		}
+		noAux->proximo = no;
 	}
-
-	return list;
 }
 
-void LIS_InserirElemento(LIS_Lista * lista, GRA_Node * no)
-{
-	LIS_Node * node;
+GRA_Node* verificaSeExplorado(GRA_Grafo* G,int** matrizFilho) {
 
-	node = LIS_CriaElemento(no);
-	if (node == NULL)
-	{
-		printf("Falha ao criar o no");
-		exit(0);
-	}
+	GRA_Node* noAux = G->origem;
 
-	if (lista->elementoCorrente == NULL)
-	{
-		lista->origem = node;
-		lista->fim = node;
-	}
-
-	else
-	{
-		if (lista->elementoCorrente->proximo != NULL)
-		{
-			node->proximo = lista->elementoCorrente->proximo;
+	while(noAux->proximo != NULL) {
+		if (comparaMatriz(noAux->matriz,matrizFilho) == 1) {
+			return noAux;
 		}
-
-		else
-		{
-			lista->fim = node;
-		}
-
-		lista->elementoCorrente->proximo = node;
 	}
 
-	lista->elementoCorrente = node;
+	return NULL;
 }
 
+void adicionaVizinho(GRA_Node* no, GRA_Node* noVizinho, int i) {
 
+	if(i==0) {
+		no->cima = noVizinho;
+	}
+	if(i==1) {
+		no->direita = noVizinho;
+	}
+	if(i==2) {
+		no->baixo = noVizinho;
+	}
+	if(i==3) {
+		no->esquerda = noVizinho;
+	}
+	
+}
 
 GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
@@ -138,7 +117,7 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 				noVizinho = DFS(G, matrizFilho);
 			}
 
-			adicionaVizinho(no, noVizinho);
+			adicionaVizinho(no, noVizinho,i);
 
 		}
 	}
