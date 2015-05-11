@@ -15,6 +15,7 @@ typedef struct granode
 	struct granode * proximo;
 
 	int explorado;
+	int visitado;
 
 	struct granode * cima;
 	struct granode * baixo;
@@ -30,7 +31,7 @@ typedef struct listanode
 	GRA_Node* no;
 
 	struct listanode* proximo;
-	
+
 } LIS_Node;
 
 typedef struct lista
@@ -38,7 +39,7 @@ typedef struct lista
 	LIS_Node* cabeca;
 
 	LIS_Node* fim;
-	
+
 } LIS_ListaDeOrigens;
 
 LIS_ListaDeOrigens * criaLista() {
@@ -75,18 +76,30 @@ void insereNaLista(LIS_ListaDeOrigens* lista, GRA_Node* no) {
 	node->no = no;
 	node->proximo = NULL;
 
-	if(lista->cabeca == NULL) {
+	if (lista->cabeca == NULL) {
 		lista->cabeca = node;
 		lista->fim = node;
-	} else {
+	}
+	else {
 		aux = lista->cabeca;
-		while(aux->proximo != NULL) {
+		while (aux->proximo != NULL) {
 			aux = aux->proximo;
 		}
 		aux->proximo = node;
 		lista->fim = node;
 	}
 
+}
+
+GRA_Node * removeDaLista(LIS_ListaDeOrigens* lista)
+{
+	GRA_Node * aux;
+
+	aux = lista->cabeca->no;
+
+	lista->cabeca = lista->cabeca->proximo;
+
+	return aux;
 }
 
 long matrizParaNumero(int** matriz) {
@@ -255,6 +268,7 @@ GRA_Node* criaNo(int** matriz) {
 
 	node->matriz = matriz;
 	node->explorado = 0;
+	node->visitado = 0;
 	node->proximo = NULL;
 	node->cima = NULL;
 	node->baixo = NULL;
@@ -293,7 +307,7 @@ GRA_Node* verificaSeExplorado(int** matrizFilho) {
 
 	long posicao = matrizParaNumero(matrizFilho);
 
-	if(grafo[posicao]==NULL) {
+	if (grafo[posicao] == NULL) {
 		return NULL;
 	}
 
@@ -375,7 +389,56 @@ GRA_Node* DFS(int ** matriz) {
 	return no;
 }
 
-int main(void){
+void bfs(GRA_Node * noRaiz, int NVertices)
+{
+	LIS_ListaDeOrigens * listaAdjacencia;
+	GRA_Node * aux;
+	int i, j;
+	listaAdjacencia = criaLista();
+
+	for (i = 0; i < NVertices; i++)
+	{
+		insereNaLista(listaAdjacencia, noRaiz);
+		noRaiz->visitado = 1;
+		while (listaAdjacencia->cabeca != NULL)
+		{
+			aux = removeDaLista(listaAdjacencia);
+
+			for (j = 0; j < 4; j++)
+			{
+				switch (j)
+				{
+				case 0:
+					if (aux->cima->visitado == 0)
+					{
+						aux->cima->visitado = 1;
+						insereNaLista(listaAdjacencia, aux->cima);
+					}
+				case 1:
+					if (aux->direita->visitado == 0)
+					{
+						aux->direita->visitado = 1;
+						insereNaLista(listaAdjacencia, aux->direita);
+					}
+				case 2:
+					if (aux->baixo->visitado == 0)
+					{
+						aux->baixo->visitado = 1;
+						insereNaLista(listaAdjacencia, aux->baixo);
+					}
+				case 3:
+					if (aux->esquerda->visitado == 0)
+					{
+						aux->esquerda->visitado = 1;
+						insereNaLista(listaAdjacencia, aux->esquerda);
+					}
+				}
+			}
+		}
+	}
+}
+
+int main1(void){
 
 	LIS_ListaDeOrigens *listaOrigens = criaLista();
 	int** matriz;
@@ -395,20 +458,20 @@ int main(void){
 	matriz[2][0] = 6;
 	matriz[2][1] = 7;
 	matriz[2][2] = 8;
-	
+
 	permute(a, 0, 8);
 
 	int contador = 0;
 
 	for (int i = 0; i < 362880; ++i)
-	{	
+	{
 		int** matrizNumero = ListaDeMatrizes[i];
 		int numero = matrizParaNumero(matrizNumero);
 
-		if(grafo[numero]==NULL) {
-			insereNaLista(listaOrigens,DFS(matrizNumero));
-			printf("\nNumero de verticies da componente %d: %ld\n",contador+1, globalVertex);
-			printf("\nNumero de arestas da componente %d: %ld\n",contador+1, globalEdges/2);
+		if (grafo[numero] == NULL) {
+			insereNaLista(listaOrigens, DFS(matrizNumero));
+			printf("\nNumero de verticies da componente %d: %ld\n", contador + 1, globalVertex);
+			printf("\nNumero de arestas da componente %d: %ld\n", contador + 1, globalEdges / 2);
 			contador++;
 			globalVertex = 0;
 			globalEdges = 0;
