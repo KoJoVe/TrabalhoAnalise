@@ -63,10 +63,10 @@ int ** acharMatriz(int** matriz, int i)
 	int linAux, colAux;
 	int ** matrizNova;
 
-	matrizNova=(int **)malloc(3*sizeof(int *));
+	matrizNova = (int **)malloc(3 * sizeof(int *));
 
-	for(int y=0;y<3;y++)
-	    matrizNova[y]=(int *) malloc(3*sizeof(int));
+	for (int y = 0; y<3; y++)
+		matrizNova[y] = (int *)malloc(3 * sizeof(int));
 
 	for (int k = 0; k < 3; ++k)
 	{
@@ -140,27 +140,28 @@ GRA_Node* criaNo(int** matriz) {
 	return node;
 }
 
-void adicionaAosExplorados(GRA_Grafo* G,GRA_Node* no) {
+void adicionaAosExplorados(GRA_Grafo* G, GRA_Node* no) {
 
 	GRA_Node* noAux;
 
-	if(G->origem == NULL) {
+	if (G->origem == NULL) {
 		G->origem = no;
-	} else {
+	}
+	else {
 		noAux = G->origem;
-		while(noAux->proximo != NULL) {
-			noAux = noAux -> proximo;
+		while (noAux->proximo != NULL) {
+			noAux = noAux->proximo;
 		}
 		noAux->proximo = no;
 	}
 }
 
-GRA_Node* verificaSeExplorado(GRA_Grafo* G,int** matrizFilho) {
+GRA_Node* verificaSeExplorado(GRA_Grafo* G, int** matrizFilho) {
 
 	GRA_Node* noAux = G->origem;
 
-	while(noAux->proximo != NULL) {
-		if (comparaMatriz(noAux->matriz,matrizFilho) == 1) {
+	while (noAux->proximo != NULL) {
+		if (comparaMatriz(noAux->matriz, matrizFilho) == 1) {
 			return noAux;
 		}
 	}
@@ -170,19 +171,19 @@ GRA_Node* verificaSeExplorado(GRA_Grafo* G,int** matrizFilho) {
 
 void adicionaVizinho(GRA_Node* no, GRA_Node* noVizinho, int i) {
 
-	if(i==0) {
+	if (i == 0) {
 		no->cima = noVizinho;
 	}
-	if(i==1) {
+	if (i == 1) {
 		no->direita = noVizinho;
 	}
-	if(i==2) {
+	if (i == 2) {
 		no->baixo = noVizinho;
 	}
-	if(i==3) {
+	if (i == 3) {
 		no->esquerda = noVizinho;
 	}
-	
+
 }
 
 GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
@@ -195,10 +196,10 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
 		int ** matrizFilho;
 
-		matrizFilho=(int **)malloc(3*sizeof(int *));
+		matrizFilho = (int **)malloc(3 * sizeof(int *));
 
-		for(int y=0;y<3;y++)
-		    matrizFilho[y]=(int *) malloc(3*sizeof(int));
+		for (int y = 0; y<3; y++)
+			matrizFilho[y] = (int *)malloc(3 * sizeof(int));
 
 		matrizFilho = acharMatriz(matriz, i);
 
@@ -210,7 +211,7 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 				noVizinho = DFS(G, matrizFilho);
 			}
 
-			adicionaVizinho(no, noVizinho,i);
+			adicionaVizinho(no, noVizinho, i);
 
 		}
 	}
@@ -220,4 +221,39 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
 int main(void){
 
+}
+
+
+GRA_Grafo * GRA_CriaGrafo()
+{
+	GRA_Grafo * grafo = NULL;
+
+	grafo = (GRA_Grafo *)malloc(sizeof(GRA_Grafo));
+
+	if (grafo == NULL)
+	{
+		printf("erro no malloc");
+		exit(0);
+	}
+
+	return grafo;
+}
+
+
+int comparaMatriz(int mat1[3][3], int mat2[3][3])
+{
+	int i, j;
+
+	for (i = 0; i < 3; i++)
+	{
+		for (j = 0; j < 3; j++)
+		{
+			if (mat1[i][j] != mat2[i][j])
+			{
+				return 0;
+			}
+		}
+	}
+
+	return 1;
 }
