@@ -13,6 +13,8 @@
 */
 
 long global = 0;
+int qtd = 0;
+int ListaDeMatrizes[362880];
 
 typedef struct granode
 {
@@ -131,12 +133,57 @@ void AchaZero(int** matriz, int * linha, int * coluna)
 	}
 }
 
+void swap(int *x, int *y)
+{
+	int temp;
+	temp = *x;
+	*x = *y;
+	*y = temp;
+}
+
 void SwapNumbers(int** matriz, int linS, int colS, int linE, int colE)
 {
 	int temp;
 	temp = matriz[linS][colS];
 	matriz[linS][colS] = matriz[linE][colE];
 	matriz[linE][colE] = temp;
+}
+
+void permute(int *a, int i, int n)
+{
+	int j;
+	if (i == n)
+	{
+		int** matriz;
+
+		matriz = (int **)malloc(3 * sizeof(int *));
+
+		for (int y = 0; y<3; y++)
+			matriz[y] = (int *)malloc(3 * sizeof(int));
+
+		matriz[0][0] = a[0];
+		matriz[0][1] = a[1];
+		matriz[0][2] = a[2];
+		matriz[1][0] = a[3];
+		matriz[1][1] = a[4];
+		matriz[1][2] = a[5];
+		matriz[2][0] = a[6];
+		matriz[2][1] = a[7];
+		matriz[2][2] = a[8];
+
+		ListaDeMatrizes[qtd] = matriz;
+		qtd++;
+		printf("%d\n", qtd);
+	}
+	else
+	{
+		for (j = i; j <= n; j++)
+		{
+			swap((a + i), (a + j));
+			permute(a, i + 1, n);
+			swap((a + i), (a + j)); //backtrack
+		}
+	}
 }
 
 int ** acharMatriz(int** matriz, int i)
@@ -340,6 +387,7 @@ int main(void){
 
 	GRA_Node *no;
 	int** matriz;
+	int a[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
 
 	matriz = (int **)malloc(3 * sizeof(int *));
 
@@ -356,5 +404,12 @@ int main(void){
 	matriz[2][1] = 7;
 	matriz[2][2] = 8;
 
+	
+	permute(a, 0, 8);
+
 	no = DFS(matriz);
+
+	getchar();
+
+	return 0;
 }
