@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <math.h>
+#define N 1000000000
 /* TODO:
 
 -Criar struct do no com seguintes informações:
 -Matriz para representar tabuleiro
 -Lista de filhos
-
+999999999
 -Criar struct de lista encadeada
 
 */
@@ -19,6 +20,8 @@ typedef struct granode
 
 	struct granode * proximo;
 
+	int explorado;
+
 	struct granode * cima;
 	struct granode * baixo;
 	struct granode * esquerda;
@@ -26,13 +29,89 @@ typedef struct granode
 
 } GRA_Node;
 
-typedef struct grafo
+GRA_Node* grafo[N];
+
+typedef struct listanode
 {
-	GRA_Node* origem;
+	GRA_Node* no;
 
-	GRA_Node* corrente;
+	struct listanode* proximo;
+	
+} LIS_Node;
 
-} GRA_Grafo;
+typedef struct lista
+{
+	LIS_Node* cabeca;
+
+	LIS_Node* fim;
+	
+} LIS_ListaDeOrigens;
+
+LIS_ListaDeOrigens * criaLista() {
+
+	LIS_ListaDeOrigens * lista;
+
+	lista = (LIS_ListaDeOrigens*)malloc(sizeof(LIS_ListaDeOrigens));
+
+	if (lista == NULL)
+	{
+		printf("erro no malloc");
+		exit(0);
+	}
+
+	lista->cabeca = NULL;
+	lista->fim = NULL;
+
+	return lista;
+}
+
+void insereNaLista(LIS_ListaDeOrigens* lista, GRA_Node* no) {
+
+	LIS_Node* node;
+	LIS_Node* aux;
+
+	node = (LIS_Node*)malloc(sizeof(LIS_Node));
+
+	if (node == NULL)
+	{
+		printf("erro no malloc");
+		exit(0);
+	}
+
+	node->no = no;
+	node->proximo = NULL;
+
+	if(lista->cabeca == NULL) {
+		lista->cabeca = node;
+		lista->fim = node;
+	} else {
+		aux = lista->cabeca;
+		while(aux->proximo != NULL) {
+			aux = aux->proximo;
+		}
+		aux->proximo = node;
+		lista->fim = node;
+	}
+
+}
+
+long matrizParaNumero(int** matriz) {
+
+	long number = 0;
+	long divisor = 100000000;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			number += (divisor*matriz[i][j]);
+			divisor /= 10;
+		}
+	}
+
+	return number;
+
+}
 
 void AchaZero(int** matriz, int * linha, int * coluna)
 {
@@ -123,6 +202,9 @@ int ** acharMatriz(int** matriz, int i)
 GRA_Node* criaNo(int** matriz) {
 
 	GRA_Node * node;
+	long posicao;
+
+	posicao = matrizParaNumero(matriz);
 
 	node = (GRA_Node*)malloc(sizeof(GRA_Node));
 
@@ -133,28 +215,21 @@ GRA_Node* criaNo(int** matriz) {
 	}
 
 	node->matriz = matriz;
+	node->explorado = 0;
 	node->proximo = NULL;
 	node->cima = NULL;
 	node->baixo = NULL;
 	node->esquerda = NULL;
 	node->direita = NULL;
 
+	grafo[posicao] = node;
+
 	return node;
 }
 
-void adicionaAosExplorados(GRA_Grafo* G, GRA_Node* no) {
+void adicionaAosExplorados(GRA_Node* no) {
 
-	GRA_Node* noAux;
-
-	if (G->origem == NULL) {
-		G->origem = no;
-	} else {
-		noAux = G->origem;
-		while (noAux->proximo != NULL) {
-			noAux = noAux->proximo;
-		}
-		noAux->proximo = no;
-	}
+	no->explorado = 1;
 }
 
 int comparaMatriz(int** mat1, int** mat2)
@@ -175,18 +250,15 @@ int comparaMatriz(int** mat1, int** mat2)
 	return 1;
 }
 
-GRA_Node* verificaSeExplorado(GRA_Grafo* G, int** matrizFilho) {
+GRA_Node* verificaSeExplorado(int** matrizFilho) {
 
-	GRA_Node* noAux = G->origem;
+	long posicao = matrizParaNumero(matrizFilho);
 
-	while (noAux->proximo != NULL) {
-		if (comparaMatriz(noAux->matriz, matrizFilho) == 1) {
-			return noAux;
-		}
-		noAux = noAux->proximo;
+	if(grafo[posicao]==NULL) {
+		return NULL;
 	}
 
-	return NULL;
+	return grafo[posicao];
 }
 
 void adicionaVizinho(GRA_Node* no, GRA_Node* noVizinho, int i) {
@@ -206,31 +278,29 @@ void adicionaVizinho(GRA_Node* no, GRA_Node* noVizinho, int i) {
 
 }
 
-GRA_Grafo * GRA_CriaGrafo()
-{
-	GRA_Grafo * grafo = NULL;
+void printMatriz(int** matriz) {
 
-	grafo = (GRA_Grafo *)malloc(sizeof(GRA_Grafo));
-
-	if (grafo == NULL)
+	for (int o = 0; o < 3; ++o)
 	{
-		printf("erro no malloc");
-		exit(0);
+		printf("\n");
+		for (int p = 0; p < 3; ++p)
+		{
+			printf("%d", matriz[o][p]);
+		}
 	}
-
-	grafo->origem = NULL;
-
-	return grafo;
+	printf("\n");
 }
 
-GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
+GRA_Node* DFS(int ** matriz) {
 
 	GRA_Node* no = criaNo(matriz);
-	adicionaAosExplorados(G, no);
+	adicionaAosExplorados(no);
 
 	global++;
 
-	printf("Numero: %ld\n", global);
+	printf("\nNumero: %ld\n", global);
+	//printf("Combinaçao do puzzle: ");
+	//printMatriz(matriz);
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -250,12 +320,12 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
 		if (matrizFilho != NULL) {
 
-			GRA_Node* noVizinho = verificaSeExplorado(G, matrizFilho);
+			GRA_Node* noVizinho = verificaSeExplorado(matrizFilho);
 
 			// printf("Achou vizinho\n");
 
 			if (noVizinho == NULL) {
-				noVizinho = DFS(G, matrizFilho);
+				noVizinho = DFS(matrizFilho);
 			}
 
 			adicionaVizinho(no, noVizinho, i);
@@ -268,7 +338,6 @@ GRA_Node* DFS(GRA_Grafo* G, int ** matriz) {
 
 int main(void){
 
-	GRA_Grafo *grafo;
 	GRA_Node *no;
 	int** matriz;
 
@@ -287,7 +356,5 @@ int main(void){
 	matriz[2][1] = 7;
 	matriz[2][2] = 8;
 
-	grafo = GRA_CriaGrafo();
-	
-	no = DFS(grafo,matriz);
+	no = DFS(matriz);
 }
