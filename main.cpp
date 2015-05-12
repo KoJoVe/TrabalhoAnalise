@@ -5,6 +5,8 @@
 
 long globalVertex = 0;
 long globalEdges = 0;
+long globalArticulation = 0;
+int nArticulacoes = 0;
 int qtd = 0;
 int** ListaDeMatrizes[362880];
 
@@ -16,8 +18,12 @@ typedef struct granode
 
 	int explorado;
 	int visitado;
+	int exploradoAP;
+	int low;
+	int disc;
 
 	struct granode * pai;
+	struct granode * paiAP;
 	int posicaoPai;
 
 	struct granode * cima;
@@ -270,8 +276,12 @@ GRA_Node* criaNo(int** matriz) {
 
 	node->matriz = matriz;
 	node->pai = NULL;
+	node->paiAP = NULL;
 	node->explorado = 0;
 	node->visitado = 0;
+	node->exploradoAP = 0;
+	node->low = -1;
+	node->disc = -1;
 	node->proximo = NULL;
 	node->cima = NULL;
 	node->baixo = NULL;
@@ -345,6 +355,62 @@ void printMatriz(int** matriz) {
 		}
 	}
 	printf("\n");
+}
+
+void encontraArticulacoes(GRA_Node* no) {
+	
+	GRA_Node* noVizinho;
+
+	int nfilhos = 0;
+	no->exploradoAP = 1;
+	globalArticulation++;
+	no->disc = no->low = globalArticulation;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		if (i==0)
+		{
+			noVizinho = no->cima;
+		}
+		if (i==1)
+		{
+			noVizinho = no->direita;
+		}
+		if (i==2)
+		{
+			noVizinho = no->baixo;
+		}
+		if (i==3)
+		{
+			noVizinho = no->esquerda;
+		}
+
+		if(noVizinho!=NULL) 
+		{
+
+			if(noVizinho->exploradoAP == 0) 
+			{
+				nfilhos++;
+				noVizinho->paiAP = no;
+				encontraArticulacoes(noVizinho);
+				no->low = fmin(no->low,noVizinho->low);
+
+				if (no->paiAP == NULL && nfilhos > 1)
+				{
+                	nArticulacoes++;
+				}
+                else if (no->paiAP != NULL && noVizinho->low >= no->disc)
+                {
+                	nArticulacoes++;
+                }
+			
+			} 
+			else if(no->paiAP != NULL && matrizParaNumero(no->paiAP->matriz) != matrizParaNumero(noVizinho->matriz))
+			{
+				no->low = fmin(no->low,noVizinho->disc);
+			}
+		}
+	}
 }
 
 GRA_Node* DFS(int ** matriz) {
@@ -538,22 +604,28 @@ int main(void){
 	while(referenciaUltimoNo->pai!=NULL) {
 		//printMatriz(referenciaUltimoNo->matriz);
 		if(referenciaUltimoNo->posicaoPai == 2) {
-			printf("CIMA, ");
+			printf("CIMA ");
 		}
 		if(referenciaUltimoNo->posicaoPai == 3) {
-			printf("DIREITA, ");
+			printf("DIREITA ");
 		}
 		if(referenciaUltimoNo->posicaoPai == 0) {
-			printf("BAIXO, ");
+			printf("BAIXO ");
 		}
 		if(referenciaUltimoNo->posicaoPai == 1) {
-			printf("ESQUERDA, ");
+			printf("ESQUERDA ");
 		}
 		referenciaUltimoNo = referenciaUltimoNo->pai;
 	}
 
-	printf("\n\nSolucao final: ");
+	printf("\nSolucao final: \n");
 	printMatriz(referenciaUltimoNo->matriz);
+
+	encontraArticulacoes(grafo[123456780]);
+
+	printf("\nNumero de pontos de articulacao na maior componente: %d\n",nArticulacoes);
+
+	printf("\n");
 
 	return 0;
 }
