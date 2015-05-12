@@ -14,8 +14,6 @@ typedef struct granode
 {
 	int** matriz;
 
-	struct granode * proximo;
-
 	int explorado;
 	int visitado;
 	int exploradoAP;
@@ -282,7 +280,6 @@ GRA_Node* criaNo(int** matriz) {
 	node->exploradoAP = 0;
 	node->low = -1;
 	node->disc = -1;
-	node->proximo = NULL;
 	node->cima = NULL;
 	node->baixo = NULL;
 	node->esquerda = NULL;
