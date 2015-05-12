@@ -17,6 +17,9 @@ typedef struct granode
 	int explorado;
 	int visitado;
 
+	struct granode * pai;
+	int posicaoPai;
+
 	struct granode * cima;
 	struct granode * baixo;
 	struct granode * esquerda;
@@ -266,6 +269,7 @@ GRA_Node* criaNo(int** matriz) {
 	}
 
 	node->matriz = matriz;
+	node->pai = NULL;
 	node->explorado = 0;
 	node->visitado = 0;
 	node->proximo = NULL;
@@ -406,7 +410,6 @@ GRA_Node * BFS(GRA_Node * noRaiz, int NVertices)
 		{
 
 			aux = removeDaLista(listaAdjacencia);
-			ultimo = aux;
 
 			for (j = 0; j < 4; j++)
 			{
@@ -419,8 +422,11 @@ GRA_Node * BFS(GRA_Node * noRaiz, int NVertices)
 						{
 							aux->cima->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->cima);
+							ultimo = aux->cima;
+							aux->cima->pai = aux;
+							aux->cima->posicaoPai = 0;
 							conta++;
-							printf("Contador: %d\n", conta);
+							// printf("Contador: %d\n", conta);
 						}
 					}
 					break;
@@ -431,8 +437,11 @@ GRA_Node * BFS(GRA_Node * noRaiz, int NVertices)
 						{
 							aux->direita->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->direita);
+							ultimo = aux->direita;
+							aux->direita->pai = aux;
+							aux->direita->posicaoPai = 1;
 							conta++;
-							printf("Contador: %d\n", conta);
+							// printf("Contador: %d\n", conta);
 
 						}
 					}
@@ -444,8 +453,11 @@ GRA_Node * BFS(GRA_Node * noRaiz, int NVertices)
 						{
 							aux->baixo->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->baixo);
+							ultimo = aux->baixo;
+							aux->baixo->pai = aux;
+							aux->baixo->posicaoPai = 2;
 							conta++;
-							printf("Contador: %d\n", conta);
+							// printf("Contador: %d\n", conta);
 						}
 					}
 					break;
@@ -456,8 +468,11 @@ GRA_Node * BFS(GRA_Node * noRaiz, int NVertices)
 						{
 							aux->esquerda->visitado = 1;
 							insereNaLista(listaAdjacencia, aux->esquerda);
+							ultimo = aux->esquerda;
+							aux->esquerda->pai = aux;
+							aux->esquerda->posicaoPai = 3;
 							conta++;
-							printf("Contador: %d\n", conta);
+							// printf("Contador: %d\n", conta);
 						}
 					}
 					break;
@@ -512,20 +527,33 @@ int main(void){
 		}
 	}
 
-	printf("\nAchados %d origens\n", contador);
+	printf("\nAchados %d componentes conexas\n", contador);
 
-	referenciaUltimoNo = BFS(grafo[102345678], 181440);
+	referenciaUltimoNo = BFS(grafo[123456780], 181440);
 
-	for (int a = 0; a < 3; a++)
-	{
-		printf("\n");
-		for (int b = 0; b < 3; b++)
-		{
-			printf("%d", referenciaUltimoNo->matriz[a][b]);
+	printf("\nArrumacao do jogo mais distante da solucao:");
+	printMatriz(referenciaUltimoNo->matriz);
+	printf("\nSequencia de movimentos para se chegar a solucao: \n");
+
+	while(referenciaUltimoNo->pai!=NULL) {
+		//printMatriz(referenciaUltimoNo->matriz);
+		if(referenciaUltimoNo->posicaoPai == 2) {
+			printf("CIMA, ");
 		}
+		if(referenciaUltimoNo->posicaoPai == 3) {
+			printf("DIREITA, ");
+		}
+		if(referenciaUltimoNo->posicaoPai == 0) {
+			printf("BAIXO, ");
+		}
+		if(referenciaUltimoNo->posicaoPai == 1) {
+			printf("ESQUERDA, ");
+		}
+		referenciaUltimoNo = referenciaUltimoNo->pai;
 	}
 
-	printf("\n");
+	printf("\n\nSolucao final: ");
+	printMatriz(referenciaUltimoNo->matriz);
 
 	return 0;
 }
